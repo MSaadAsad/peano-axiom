@@ -1,0 +1,426 @@
+{% extends 'base.html' %}
+{% block content %}
+  <div class="row">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Play with Peano's axioms</h5>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <details class="mb-2">
+                <summary class="fw-bold text-primary">Peano axioms (foundational)</summary>
+                <div class="small mt-2">
+                  <div class="ms-2 font-monospace">
+                    <strong>A1:</strong> 0 is a natural number<br>
+                    <strong>A2:</strong> ∀x (Nat(x) → Nat(s(x)))<br>
+                    <strong>A3:</strong> ∀x (s(x) ≠ 0)<br>
+                    <strong>A4:</strong> ∀x∀y (s(x) = s(y) → x = y)<br>
+                    <strong>A5</strong> (Induction schema):<br>
+                    &nbsp;&nbsp;φ(0) ∧ ∀x (φ(x) → φ(s(x))) → ∀x φ(x)
+                  </div>
+                </div>
+              </details>
+            </div>
+            <div class="col-md-6">
+              <details class="mb-2">
+                <summary class="fw-bold text-success">Operation definitions (derived)</summary>
+                <div class="small mt-2">
+                  <div class="mb-2">
+                    <strong>Addition (primitive recursion on 2nd arg):</strong>
+                    <div class="ms-2 font-monospace">
+                      add(x, 0) = x<br>
+                      add(x, s(y)) = s(add(x, y))
+                    </div>
+                  </div>
+                  <div class="mb-2">
+                    <strong>Multiplication (via addition):</strong>
+                    <div class="ms-2 font-monospace">
+                      mult(x, 0) = 0<br>
+                      mult(x, s(y)) = add(mult(x, y), x)
+                    </div>
+                  </div>
+                  <div class="mb-2">
+                    <strong>Subtraction (clamped/truncated monus):</strong>
+                    <div class="ms-2 font-monospace">
+                      sub(x, 0) = x<br>
+                      sub(0, s(y)) = 0<br>
+                      sub(s(x), s(y)) = sub(x, y)<br>
+                      <span class="text-info">-- Theorem: if ¬lt(x,y) then add(sub(x,y), y) = x</span>
+                    </div>
+                  </div>
+                  <div class="mb-2">
+                    <strong>Comparison (strict less-than):</strong>
+                    <div class="ms-2 font-monospace">
+                      lt(0, s(y)) = true<br>
+                      lt(s(x), 0) = false<br>
+                      lt(s(x), s(y)) = lt(x, y)<br>
+                      <span class="text-info">-- Derived: lt(0,0) = false</span>
+                    </div>
+                  </div>
+                  <div class="mb-2">
+                    <strong>Division (defined for y ≠ 0):</strong>
+                    <div class="ms-2 font-monospace">
+                      div(x, y) = div_step(x, y, 0) &nbsp;&nbsp;&nbsp;<span class="text-warning">(y ≠ 0)</span><br>
+                      div_step(x, y, q) =<br>
+                      &nbsp;&nbsp;if lt(x, y) then q<br>
+                      &nbsp;&nbsp;else div_step(sub(x, y), y, s(q))
+                    </div>
+                  </div>
+                  <div class="mb-2">
+                    <strong>Modulo (defined for y ≠ 0):</strong>
+                    <div class="ms-2 font-monospace">
+                      mod(x, y) = &nbsp;&nbsp;&nbsp;<span class="text-warning">(y ≠ 0)</span><br>
+                      &nbsp;&nbsp;if lt(x, y) then x<br>
+                      &nbsp;&nbsp;else mod(sub(x, y), y)
+                    </div>
+                  </div>
+                  <div>
+                    <strong>GCD (Euclid):</strong>
+                    <div class="ms-2 font-monospace">
+                      gcd(x, 0) = x<br>
+                      gcd(x, y) = gcd(y, mod(x, y)) &nbsp;&nbsp;&nbsp;<span class="text-warning">(y ≠ 0)</span>
+                    </div>
+                  </div>
+                </div>
+              </details>
+            </div>
+          </div>
+          
+          <details class="mb-3">
+            <summary class="fw-bold text-muted">Advanced: Equality axioms (FOL with =)</summary>
+            <div class="small mt-2">
+              <div class="mb-2">
+                <strong>Core equality axioms:</strong>
+                <div class="ms-2 font-monospace">
+                  Reflexivity: &nbsp;&nbsp;∀x (x = x)<br>
+                  Symmetry: &nbsp;&nbsp;&nbsp;&nbsp;∀x∀y (x = y → y = x)<br>
+                  Transitivity: ∀x∀y∀z ((x = y ∧ y = z) → x = z)
+                </div>
+              </div>
+              <div class="mb-2">
+                <strong>Congruence for functions (substitutivity):</strong>
+                <div class="ms-2 font-monospace">
+                  x=y → s(x)=s(y)<br>
+                  (x₁=y₁ ∧ x₂=y₂) → add(x₁,x₂)=add(y₁,y₂)<br>
+                  (x₁=y₁ ∧ x₂=y₂) → mult(x₁,x₂)=mult(y₁,y₂)<br>
+                  (x₁=y₁ ∧ x₂=y₂) → sub(x₁,x₂)=sub(y₁,y₂)<br>
+                  (x₁=y₁ ∧ x₂=y₂) → div(x₁,x₂)=div(y₁,y₂) &nbsp;&nbsp;<span class="text-warning">(when x₂≠0)</span><br>
+                  (x₁=y₁ ∧ x₂=y₂) → mod(x₁,x₂)=mod(y₁,y₂) &nbsp;&nbsp;<span class="text-warning">(when x₂≠0)</span><br>
+                  (x₁=y₁ ∧ x₂=y₂) → gcd(x₁,x₂)=gcd(y₁,y₂)
+                </div>
+              </div>
+              <div class="mb-2">
+                <strong>Congruence for predicates:</strong>
+                <div class="ms-2 font-monospace">
+                  (x₁=y₁ ∧ x₂=y₂) → (lt(x₁,x₂) ↔ lt(y₁,y₂))
+                </div>
+              </div>
+              <div>
+                <strong>Notes:</strong>
+                <div class="ms-2">
+                  • <strong>Numerals:</strong> 0, s(0)=1, s(s(0))=2, … (used as shorthands in traces)<br>
+                  • <strong>Associativity/commutativity/distributivity</strong> are <em>theorems</em>, not axioms, provable from above<br>
+                  • To avoid partiality, could totalize div/mod by setting div(x,0)=0, mod(x,0)=0
+                </div>
+              </div>
+            </div>
+          </details>
+          <form method="post" class="row gy-3 align-items-end">
+            <div class="col-md-3">
+              <label for="input_mode" class="form-label">Input type</label>
+              <select class="form-select" id="input_mode" name="input_mode">
+                <option value="natural" {% if (input_mode or 'natural')=='natural' %}selected{% endif %}>Naturals</option>
+                <option value="fraction" {% if input_mode=='fraction' %}selected{% endif %}>Fractions</option>
+              </select>
+            </div>
+            {% if (input_mode or 'natural') == 'natural' %}
+              <div class="col-md-4" id="x-input">
+                <label for="x" class="form-label">X</label>
+                <input type="number" min="0" class="form-control" id="x" name="x" value="{{ x or 0 }}" />
+              </div>
+              <div class="col-md-4" id="y-input">
+                <label for="y" class="form-label">Y</label>
+                <input type="number" min="0" class="form-control" id="y" name="y" value="{{ y or 0 }}" />
+              </div>
+            {% else %}
+              <div class="col-md-4">
+                <label class="form-label">X</label>
+                <div class="input-group input-fraction">
+                  <input type="number" min="0" class="form-control text-center" id="x_num" name="x_num" value="{{ x_num or 1 }}" />
+                  <span class="input-group-text">/</span>
+                  <input type="number" min="1" class="form-control text-center" id="x_den" name="x_den" value="{{ x_den or 1 }}" />
+                </div>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Y</label>
+                <div class="input-group input-fraction">
+                  <input type="number" min="0" class="form-control text-center" id="y_num" name="y_num" value="{{ y_num or 1 }}" />
+                  <span class="input-group-text">/</span>
+                  <input type="number" min="1" class="form-control text-center" id="y_den" name="y_den" value="{{ y_den or 1 }}" />
+                </div>
+              </div>
+            {% endif %}
+            <div class="col-md-9">
+              <label class="form-label">Operation</label>
+              <input type="hidden" id="operation" name="operation" value="{{ operation }}" />
+              {% if (input_mode or 'natural') == 'natural' %}
+                <div class="btn-group btn-group-sm flex-wrap gap-2" role="group" id="opButtons" data-mode="natural">
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="successor" title="successor">+1</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="predecessor" title="predecessor">−1</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="add" title="add">+</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="subtract" title="subtract">−</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="multiply" title="multiply">×</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="less_than" title="less than">&lt;</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="equal" title="equal">=</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="greater_than" title="greater than">&gt;</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="div" title="quotient">÷</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="mod" title="modulo">%</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="gcd" title="gcd">gcd</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="to_fraction" title="to fraction">→ a/b</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="simplify_fraction" title="simplify ratio">simplify</button>
+                </div>
+              {% else %}
+                <div class="btn-group btn-group-sm flex-wrap gap-2" role="group" id="opButtons" data-mode="fraction">
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="add_fractions" title="add">+</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="subtract_fractions" title="subtract">−</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="multiply_fractions" title="multiply">×</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="divide_fractions" title="divide">÷</button>
+                  <button type="button" class="btn btn-outline-secondary op-btn" data-op="simplify_fraction_input" title="simplify">simplify</button>
+                </div>
+              {% endif %}
+              <script>
+                (function(){
+                  const input = document.getElementById('operation');
+                  const group = document.getElementById('opButtons');
+                  const yInput = document.getElementById('y-input');
+                  if (!input || !group) return;
+                  
+                  function updateActive() {
+                    group.querySelectorAll('.op-btn').forEach(btn => {
+                      btn.classList.toggle('btn-primary', input.value === btn.dataset.op);
+                      btn.classList.toggle('btn-outline-secondary', input.value !== btn.dataset.op);
+                    });
+                  }
+                  
+                  function updateInputVisibility() {
+                    const op = input.value;
+                    const isUnaryOp = op === 'successor' || op === 'predecessor';
+                    if (yInput) {
+                      yInput.style.display = isUnaryOp ? 'none' : 'block';
+                    }
+                  }
+                  
+                  group.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.op-btn');
+                    if (!btn) return;
+                    input.value = btn.dataset.op;
+                    updateActive();
+                    updateInputVisibility();
+                  });
+                  
+                  updateActive();
+                  updateInputVisibility();
+                })();
+              </script>
+            </div>
+            <div class="col-md-3 d-grid d-md-block">
+              <button type="submit" class="btn btn-primary w-100">Compute</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-4">
+    <div class="col-12">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted mb-2">Result</h6>
+          {% if error %}
+            <div class="alert alert-danger mb-3">{{ error }}</div>
+          {% endif %}
+          {% if negative %}
+            <div class="alert alert-warning mb-3">Note: A negative intermediate value would occur; result is clamped at 0.</div>
+          {% endif %}
+          {% if result %}
+            <div class="mb-3">
+              <span class="badge text-bg-secondary">{{ result.operation }}</span>
+              {% if steps is not none %}
+                <span class="badge text-bg-light text-muted ms-2">steps: {{ steps }}</span>
+              {% endif %}
+            </div>
+            <ul class="list-group list-group-flush">
+              {% if result.x %}
+                <li class="list-group-item">
+                  <strong>X:</strong>
+                  <div>int: {{ result.x.int }}</div>
+                  <div>Peano: <code>{{ result.x.peano }}</code></div>
+                </li>
+              {% endif %}
+              {% if result.y %}
+                <li class="list-group-item">
+                  <strong>Y:</strong>
+                  <div>int: {{ result.y.int }}</div>
+                  <div>Peano: <code>{{ result.y.peano }}</code></div>
+                </li>
+              {% endif %}
+              <li class="list-group-item">
+                <strong>Output:</strong>
+                {% if result.result.numerator %}
+                  <div class="mt-2">
+                    <div class="mb-2">
+                      <span class="frac frac-lg">
+                        <span class="num">{{ result.result.numerator.int }}</span>
+                        <span class="den">{{ result.result.denominator.int }}</span>
+                      </span>
+                      <span class="text-muted ms-2">(int)</span>
+                    </div>
+                    <div class="mb-2 text-wrap">
+                      <code>PeanoFraction("{{ result.result.numerator.peano }}", "{{ result.result.denominator.peano }}")</code>
+                    </div>
+                  </div>
+                {% else %}
+                  <div>int: {{ result.result.int }}</div>
+                  <div>Peano: <code>{{ result.result.peano }}</code></div>
+                {% endif %}
+              </li>
+            </ul>
+          {% else %}
+            <div class="text-muted">Choose an operation and press Compute.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-12">
+      <details class="card shadow-sm">
+        <summary class="card-header">Show computation trace</summary>
+        <div class="card-body mt-0 small">
+            {% if trace %}
+              <div class="d-flex justify-content-end gap-2 mb-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="trace-collapse-all">Collapse all</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="trace-expand-all">Expand all</button>
+                <div class="form-check form-switch form-check-inline">
+                  <input class="form-check-input" type="checkbox" id="trace-leaf-only">
+                  <label class="form-check-label" for="trace-leaf-only">Leaf/root results only</label>
+                </div>
+              </div>
+              <div id="trace-list">
+                {% for n in trace %}
+                  <div class="trace-card card mb-2" data-depth="{{ n.depth }}" data-index="{{ loop.index0 }}" style="--depth: {{ n.depth }};">
+                    <div class="card-body py-2">
+                      <div class="d-flex align-items-center justify-content-between">
+                        <div class="left d-flex align-items-center flex-wrap text-truncate">
+                          <span class="caret me-2"></span>
+                          <code class="me-1">{{ n.op }}</code>
+                          (
+                            <code class="truncate" title="{{ n.args|join(', ') }}">{{ n.args|join(', ') }}</code>
+                          )
+                          →
+                          <code class="truncate result" title="{{ n.result }}">{{ n.result }}</code>
+                          {% if n.axiom %}
+                            <span class="badge text-bg-primary ms-2">Axiom {{ n.axiom }}</span>
+                          {% endif %}
+                          {% if n.definition %}
+                            <span class="badge text-bg-secondary ms-2">{{ n.definition }}</span>
+                          {% endif %}
+                        </div>
+                        {% if n.meaning %}
+                          <div class="text-muted small meaning"><code>{{ n.meaning }}</code></div>
+                        {% endif %}
+                      </div>
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+              <script>
+                (function() {
+                  const list = document.getElementById('trace-list');
+                  if (!list) return;
+                  const items = Array.from(list.querySelectorAll('.trace-card'));
+                  // mark nodes that have children
+                  items.forEach((el, i) => {
+                    const d = Number(el.dataset.depth || 0);
+                    const next = items[i + 1];
+                    if (next && Number(next.dataset.depth || 0) > d) {
+                      el.classList.add('has-children');
+                    }
+                  });
+
+                  function collapseFrom(idx) {
+                    const el = items[idx];
+                    const d = Number(el.dataset.depth || 0);
+                    el.classList.add('collapsed');
+                    for (let i = idx + 1; i < items.length; i++) {
+                      const di = Number(items[i].dataset.depth || 0);
+                      if (di <= d) break;
+                      items[i].classList.add('hidden');
+                    }
+                  }
+                  function expandFrom(idx) {
+                    const el = items[idx];
+                    const d = Number(el.dataset.depth || 0);
+                    el.classList.remove('collapsed');
+                    for (let i = idx + 1; i < items.length; i++) {
+                      const di = Number(items[i].dataset.depth || 0);
+                      if (di <= d) break;
+                      if (di === d + 1) items[i].classList.remove('hidden');
+                    }
+                  }
+                  list.addEventListener('click', (e) => {
+                    const card = e.target.closest('.trace-card');
+                    if (!card || !card.classList.contains('has-children')) return;
+                    const idx = Number(card.dataset.index);
+                    if (card.classList.contains('collapsed')) expandFrom(idx); else collapseFrom(idx);
+                  });
+                  document.getElementById('trace-collapse-all').addEventListener('click', () => {
+                    items.forEach((_, i) => { if (items[i].classList.contains('has-children')) collapseFrom(i); });
+                  });
+                  document.getElementById('trace-expand-all').addEventListener('click', () => {
+                    items.forEach((el, i) => {
+                      if (el.classList.contains('has-children')) {
+                        el.classList.remove('collapsed');
+                        const d = Number(el.dataset.depth || 0);
+                        for (let j = i + 1; j < items.length; j++) {
+                          const dj = Number(items[j].dataset.depth || 0);
+                          if (dj <= d) break;
+                          if (dj === d + 1) items[j].classList.remove('hidden');
+                        }
+                      }
+                    });
+                  });
+
+                  // Leaf/root results only toggle
+                  const leafToggle = document.getElementById('trace-leaf-only');
+                  function applyLeafOnly() {
+                    const on = leafToggle && leafToggle.checked;
+                    items.forEach((el) => {
+                      const d = Number(el.dataset.depth || 0);
+                      const isRoot = d === 0;
+                      const hasChildren = el.classList.contains('has-children');
+                      const isLeaf = !hasChildren;
+                      const show = !on || isLeaf || isRoot;
+                      const resultEl = el.querySelector('.result');
+                      if (resultEl) resultEl.style.display = show ? '' : 'none';
+                      const meaningEl = el.querySelector('.meaning');
+                      if (meaningEl) meaningEl.style.display = show ? '' : 'none';
+                    });
+                  }
+                  if (leafToggle) {
+                    leafToggle.addEventListener('change', applyLeafOnly);
+                    applyLeafOnly();
+                  }
+                })();
+              </script>
+            {% else %}
+              <div class="text-muted">No trace available.</div>
+            {% endif %}
+        </div>
+      </details>
+    </div>
+  </div>
+{% endblock %}
+

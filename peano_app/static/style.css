@@ -1,0 +1,47 @@
+body { background: #f8f9fa; }
+.card { border-radius: 12px; }
+code { user-select: all; }
+
+/* Simple stacked fraction rendering */
+.frac { display: inline-block; text-align: center; line-height: 1; }
+.frac .num { display: block; padding: 0 0.4rem; border-bottom: 2px solid currentColor; }
+.frac .den { display: block; padding: 0 0.4rem; }
+.frac.frac-lg .num, .frac.frac-lg .den { font-size: 1.5rem; }
+
+/* Input fraction group */
+.input-fraction .form-control { max-width: 6rem; }
+.input-fraction .input-group-text { border-left: 0; border-right: 0; background: transparent; }
+
+/* Trace table tweaks */
+.trace-table th, .trace-table td { vertical-align: middle; }
+.trace-table code { white-space: nowrap; }
+
+/* Collapsible tree */
+.trace-list .trace-item { cursor: default; }
+.trace-list .trace-item.has-children { cursor: pointer; }
+.trace-list .trace-item.hidden { display: none; }
+.trace-list .trace-item .caret::before {
+  content: '';
+  display: inline-block;
+  width: 0; height: 0;
+  margin-right: 6px;
+  border-left: 5px solid currentColor;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+}
+.trace-list .trace-item.collapsed .caret::before {
+  transform: rotate(-90deg);
+}
+
+/* Card-based tree */
+.trace-card { margin-left: calc(var(--depth, 0) * 16px); }
+.trace-card.hidden { display: none; }
+.trace-card.has-children { cursor: pointer; }
+.trace-card .caret{display:inline-block;width:0;height:0;margin-right:8px;border-left:6px solid transparent;border-right:6px solid transparent;border-top:7px solid currentColor;} /* open: up */
+.trace-card.collapsed .caret{border-top:0;border-bottom:7px solid transparent;border-left:7px solid currentColor;border-right:0;} /* closed: right */
+.trace-card:not(.has-children) .caret{opacity:0; width:0; margin-right:8px;}
+
+/* Truncation helpers */
+.trace-card .left { min-width: 0; }
+.trace-card code.truncate { max-width: 28ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; display: inline-block; vertical-align: bottom; }
+
